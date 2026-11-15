@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; media-src 'self'; font-src 'self'; connect-src 'none'; form-action 'none'; object-src 'none'">
+  <meta name="theme-color" content="#61aaf2">
+  <meta name="description" content="Beyond Linear Decodability: understanding and improving instruction following in world action models through prior–instruction competition and linear-decodability supervision.">
+  <title>Beyond Linear Decodability · Instruction Following in World Action Models</title>
+  <link rel="stylesheet" href="static/css/style.css">
+  <script src="static/js/main.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<nav class="topnav" aria-label="Main navigation">
+  <div class="container nav-inner">
+    <a class="wordmark" href="#overview" aria-label="LDS home">LDS<span class="brand-dot">.</span></a>
+    <div class="nav-links">
+      <a href="#phenomenon">Phenomenon</a><a href="#mechanism">Mechanism</a><a href="#why-lds">Why LDS</a><a href="#experiments">Experiments</a><a href="#real-world">Real world</a>
+    </div>
+  </div>
+</nav>
+<main id="main">
+<header class="hero" id="overview">
+  <div class="container">
+    <div class="hero-copy hero-copy-wide">
+      <p class="eyebrow">World action models / Instruction following</p>
+      <h1>Beyond Linear Decodability<span class="title-subline">Understanding and Improving Instruction Following in World Action Models</span></h1>
+      <p class="hero-summary">WAMs can encode the instructed target yet still follow a learned prior. We explain this failure as <strong class="baseline-text">prior–instruction competition</strong>, test it with training-free interventions, and show why <strong class="fine-text">linear-decodability supervision (LDS)</strong> improves behavior even though its linear heads are discarded at inference.</p>
+      <div class="project-resources" role="group" aria-label="Project resources">
+        <div class="hero-links">
+          <span class="resource-link resource-pending" id="paper-link">arXiv <span class="resource-status">Coming soon</span></span>
+          <a class="resource-link code-link" href="https://github.com/RuFlect-Intelligence/RoboTwin-IF">RoboTwin-IF Code <span aria-hidden="true">↗</span></a>
+          <a class="resource-link" href="https://huggingface.co/datasets/RuFlect/RoboTwin-IF">RoboTwin-IF Dataset <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="checkpoint-links">
+          <span class="checkpoint-label">Fine checkpoints</span>
+          <ul aria-label="Fine checkpoints on Hugging Face">
+            <li><a href="https://huggingface.co/RuFlect/RoboTwin-IF-OpenWAM-LDS">OpenWAM <span aria-hidden="true">↗</span></a></li>
+            <li><a href="https://huggingface.co/RuFlect/RoboTwin-IF-LingBot-VA-LDS">LingBot-VA <span aria-hidden="true">↗</span></a></li>
+            <li><a href="https://huggingface.co/RuFlect/RoboTwin-IF-InternW0-Delta-LDS">InternW0-Δ <span aria-hidden="true">↗</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="comparison-key" aria-label="Comparison colors">
+        <span class="baseline-key"><i aria-hidden="true"></i>Prior, NF, or Base</span>
+        <span class="fine-key"><i aria-hidden="true"></i>Instruction, IF, or + LDS</span>
+      </div>
+    </div>
+    <figure class="paper-figure overview-figure">
+      <img src="static/img/paper/main.png" width="2956" height="1230" alt="Paper overview showing the surprising effect of LDS, prior-instruction competition between tags P and I, and why LDS works by amplifying I." fetchpriority="high">
+      <figcaption><strong>Overview.</strong> (a) LDS improves instruction following even though the linear head is removed at inference. (b) A weak instruction tag <em>I</em> competes with a prior tag <em>P</em>; intervening on either signal improves behavior without training. (c) LDS amplifies the existing <em>I</em> while largely preserving its direction.</figcaption>
+    </figure>
+  </div>
+</header>
+
+<div class="container corpus-strip headline-strip" aria-label="Headline results">
+  <p class="strip-label">Main results<br><span>Success rates</span></p>
+  <div class="corpus-stat"><strong><span class="baseline-text">5.1</span><span class="result-arrow" aria-hidden="true">→</span><span class="fine-text">65.1</span><span class="unit">%</span></strong><span>OpenWAM + LDS · LIBERO-CF</span></div>
+  <div class="corpus-stat"><strong><span class="baseline-text">3.8</span><span class="result-arrow" aria-hidden="true">→</span><span class="fine-text">53.0</span><span class="unit">%</span></strong><span>Training-free Enhance <em>I</em></span></div>
+  <div class="corpus-stat"><strong class="fine-text">74.6<span class="unit">%</span></strong><span>InternW0-Δ + LDS · LIBERO-CF</span></div>
+</div>
+
+<section class="section intro-section" id="abstract" aria-labelledby="intro-title">
+  <div class="container intro-grid">
+    <div><p class="eyebrow">Abstract</p><h2 id="intro-title">Encoded is not enough.<br>The instruction has to win.</h2></div>
+    <div class="prose">
+      <p>World action models (WAMs) exhibit strong manipulation capabilities but often fail to follow test-time language instructions, instead favoring behaviors learned during training. We probe whether instructed-target information is represented in WAMs. Both instruction-following (IF) and non-following (NF) WAMs encode it, but IF WAMs exhibit substantially stronger linear decodability.</p>
+      <p>This motivates <strong>linear-decodability supervision (LDS)</strong>. LDS dramatically improves instruction following even though the auxiliary readout is discarded at inference. We explain the effect with a <strong>prior–instruction competition</strong> mechanism: a learned prior signal competes with an instruction-dependent signal in visual representations. Two training-free interventions provide causal evidence, and representation measurements show that LDS predominantly amplifies the existing instruction tag.</p>
+      <p>Across LIBERO-CF, LangGap, RoboTwin-IF, held-out splits, and real-world tasks, LDS improves instruction following across WAMs and visual domains.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section soft-section" id="phenomenon" aria-labelledby="phenomenon-title">
+  <div class="container">
+    <div class="section-heading"><div><p class="eyebrow">01 / A surprising effect</p><h2 id="phenomenon-title">From linear decodability<br>to behavioral control.</h2></div><p>OpenWAM.<br>NF versus IF WAMs.</p></div>
+    <p class="section-lead">We construct an IF counterpart by fine-tuning an NF WAM on counterfactual demonstrations, in which similar observations are paired with different instructions and behaviors. For OpenWAM, counterfactual training raises IF success on the RoboTwin probe panel from 11.05% to 47.76%.</p>
+    <div class="analysis-grid">
+      <figure class="paper-figure analysis-figure"><img src="static/img/paper/probe_accuracy_nf_if.png" width="2048" height="1340" alt="Layer-by-site linear probe accuracy heatmaps. The non-following OpenWAM is near chance, while the instruction-following OpenWAM shows strong blue decodability from about layer 6 onward." loading="lazy"><figcaption><strong>Stronger and more widespread target decodability.</strong> Bi-directional linear-probe accuracy for 30 layers and nine computation sites; left is NF, right is IF. Data: 256 scenes and 515 instructions on RoboTwin2.0.</figcaption></figure>
+      <div class="finding-stack">
+        <article><span class="card-overline">Probe</span><h3>Does the instructed target exist in this patch?</h3><p>A sample is correct only if the probe recognizes the target object and rejects the non-target object.</p></article>
+        <article><span class="card-overline">Behavioral relevance</span><h3>Higher decodability, higher success.</h3><p>Across instructions, first-frame probe accuracy is positively associated with closed-loop success: slope 2.07, 95% CI [0.15, 3.49].</p></article>
+      </div>
+    </div>
+    <figure class="paper-figure wide-paper-figure"><img src="static/img/paper/correlation.png" width="2139" height="1073" alt="Paper figure: layer and site-wise gain in linear-probe accuracy from counterfactual training, and probe accuracy versus instruction success." loading="lazy"><figcaption><strong>Decodability is behaviorally relevant, but not yet causal.</strong> (a) Gain from counterfactual training. (b) Probe accuracy versus success, with a least-squares fit and 95% confidence band.</figcaption></figure>
+    <div class="method-split">
+      <figure class="paper-figure lds-figure"><img src="static/img/paper/LDS.png" width="1887" height="793" alt="Paper illustration of LDS: linear decoding heads at layers 9, 19, and 29 predict fine-grained target-grounding maps and are discarded at inference." loading="lazy"><figcaption><strong>Linear-decodability supervision.</strong> Linear heads at selected layers predict fine-grained grounding maps; they are discarded at inference.</figcaption></figure>
+      <div class="method-copy">
+        <p class="eyebrow">LDS</p><h3>Supervise target grounding,<br>keep the WAM architecture.</h3>
+        <ul class="clean-list"><li>Read layers <strong>9, 19, and 29</strong> at the first denoising step.</li><li>Each of 8 × 10 visual tokens predicts a <strong>4 × 4</strong> grid, yielding a 32 × 40 grounding map.</li><li>Region weights for target / other objects / background: <strong>0.50 / 0.45 / 0.05</strong>.</li><li>Train jointly with native flow matching at <strong>λ = 0.25</strong>. Counterfactual data supply grounding labels, not action or future-video labels.</li></ul>
+        <p class="equation" aria-label="Total loss equals flow matching loss plus lambda times auxiliary loss">L<sub>total</sub> = L<sub>FM</sub> + λ L<sub>aux</sub></p>
+      </div>
+    </div>
+    <div class="callout-result"><span>OpenWAM on LIBERO-CF · Success / Grounding</span><strong><span class="baseline-text">5.1 / 14.4%</span><span class="result-arrow" aria-hidden="true">→</span><span class="fine-text">65.1 / 90.3%</span></strong><p>The improvement is surprising because linearly decodable information is not guaranteed to be used by the downstream policy.</p></div>
+  </div>
+</section>
+
+<section class="section" id="mechanism" aria-labelledby="mechanism-title">
+  <div class="container">
+    <div class="section-heading"><div><p class="eyebrow">02 / Mechanism</p><h2 id="mechanism-title">The prior tag and<br>the instruction tag compete.</h2></div><p>Two candidates.<br>One shared observation.</p></div>
+    <div class="mechanism-explainer">
+      <div class="prose"><p>Consider candidates <em>A</em> and <em>B</em>, where <em>A</em> is favored by the WAM's learned prior. Tags are additive, visual-target-associated components of intermediate visual-token representations.</p><p>The <strong class="baseline-text">prior tag P</strong> encodes the learned preference for a visual target. The <strong class="fine-text">instruction tag I</strong> marks the target specified by the current instruction. Under a counterfactual instruction, <em>P</em> remains on <em>A</em> while <em>I</em> moves to <em>B</em>. IF failures arise when <em>P</em> wins.</p></div>
+      <div class="equation-card" aria-label="Tag equations"><p><span>Prior-aligned L<sub>A</sub></span>x<sub>A</sub> = v<sub>A</sub> + <b class="baseline-text">P</b> + <b class="fine-text">I</b>, &nbsp; x<sub>B</sub> = v<sub>B</sub></p><p><span>Counterfactual L<sub>B</sub></span>x<sub>A</sub> = v<sub>A</sub> + <b class="baseline-text">P</b>, &nbsp; x<sub>B</sub> = v<sub>B</sub> + <b class="fine-text">I</b></p><p><span>Paired decomposition</span><b class="fine-text">I</b> = (Δ<sub>A</sub> − Δ<sub>B</sub>) / 2, &nbsp; U = (Δ<sub>A</sub> + Δ<sub>B</sub>) / 2</p><small>U = (v<sub>A</sub> − v<sub>B</sub>) + P is the prior-associated component; P cannot be separated independently.</small></div>
+    </div>
+    <div class="intervention-grid">
+      <figure class="paper-figure trainfree-figure"><img src="static/img/paper/trainfree_result.png" width="1833" height="834" alt="Paper figure comparing baseline, Transit P, Enhance I, and LDS outcomes on the LIBERO-CF picking subset." loading="lazy"><figcaption><strong>Training-free interventions.</strong> Outcomes on the LIBERO-CF picking subset. Blue indicates instruction-following success or grounding; brown indicates the original, prior-driven goal.</figcaption></figure>
+      <div class="intervention-cards">
+        <article class="prior-card"><span>Transit P · β = 64</span><strong>50.8%</strong><p>Move the prior-associated component from <em>A</em> toward <em>B</em>, so both tags attach to the instructed target. Grounding: 84.0%.</p></article>
+        <article class="instruction-card"><span>Enhance I · α = 32</span><strong>53.0%</strong><p>Amplify the existing instruction tag on <em>B</em>, allowing it to overcome the prior. Grounding: 80.0%.</p></article>
+        <p class="small-note">Baseline: 3.8% success and 7.0% grounding. No model parameters are updated.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section soft-section" id="why-lds" aria-labelledby="why-title">
+  <div class="container">
+    <div class="section-heading"><div><p class="eyebrow">03 / Rethinking LDS</p><h2 id="why-title">LDS amplifies<br>the instruction tag.</h2></div><p>Same pattern after<br>CF training and LDS.</p></div>
+    <div class="why-grid">
+      <div class="margin-proof"><p class="eyebrow">Why amplify I?</p><p>A shared readout <em>w</em> must classify both counterfactual instructions correctly:</p><p class="math-line">w<sup>⊤</sup>(U + I) &gt; 0, &nbsp; w<sup>⊤</sup>(U − I) &lt; 0</p><p class="math-line strong-math">⇒ w<sup>⊤</sup>I &gt; |w<sup>⊤</sup>U|</p><p><em>U</em> is invariant when the instruction changes; <em>I</em> changes with it. Amplifying the existing <em>I</em> directly increases the classification margin.</p></div>
+      <div class="representation-table"><table class="results"><caption>OpenWAM · LIBERO-CF held-out scenes · layer 8</caption><thead><tr><th scope="col">Quantity</th><th scope="col" class="baseline-text">Base</th><th scope="col" class="fine-text">+ LDS</th><th scope="col">Cosine</th></tr></thead><tbody><tr><th scope="row">Instruction tag ‖Ī‖</th><td class="baseline-text">3.4</td><td class="fine-text">14.1</td><td>0.90</td></tr><tr><th scope="row">Prior-associated ‖Ū‖</th><td class="baseline-text">26.1</td><td class="fine-text">22.9</td><td>0.95</td></tr></tbody></table><p class="small-note">The magnitude of <em>I</em> increases while <em>U</em> changes only modestly; both directions remain largely aligned.</p></div>
+    </div>
+    <figure class="paper-figure wide-paper-figure ratio-figure"><img src="static/img/paper/iu_ratio_mechanism.png" width="2300" height="780" alt="Two-panel line chart of the instruction-to-prior ratio by layer. Counterfactual training raises the ratio on RoboTwin probe scenes, and LDS raises it on LIBERO-CF held-out scenes." loading="lazy"><figcaption><strong>Two routes to instruction following increase the relative strength of I.</strong> Left: original NF OpenWAM versus the CF-trained IF OpenWAM, at block output. Right: LIBERO-CF Base versus + LDS, at residual output. Lines are medians across scenes; bands are interquartile ranges. Compare colors within each panel; the panels use different data and capture protocols.</figcaption></figure>
+    <p class="source-note">Beyond amplifying <em>I</em>, LDS updates WAM parameters, allowing downstream readers to adapt to shifted activations. Training-free interventions instead apply fixed external coefficients, which may move activations away from the training distribution.</p>
+  </div>
+</section>
+
+<section class="section" id="experiments" aria-labelledby="experiments-title">
+  <div class="container">
+    <div class="section-heading"><div><p class="eyebrow">04 / Simulation experiments</p><h2 id="experiments-title">LDS unlocks<br>instruction following.</h2></div><p>LIBERO-CF, LangGap,<br>and RoboTwin-IF.</p></div>
+    <p class="section-lead">LDS is trained for 1,024 steps by jointly optimizing native flow matching and auxiliary grounding loss. Success measures completion of the evaluated instruction; Grounding measures whether the policy reaches the instructed target or destination.</p>
+    <div class="benchmark-cards">
+      <article><span class="card-overline">Alternative feasible goals</span><h3>LIBERO-CF</h3><p class="benchmark-size">50 tasks <span>× 50 initial states</span></p><p>Faithful (F.) scores the instructed goal; Biased (B.) scores the original training goal.</p></article>
+      <article><span class="card-overline">Semantic changes</span><h3>LangGap</h3><p class="benchmark-size">59 tasks <span>× 10 initial states</span></p><p>Varies manipulated objects, destinations, spatial references, and actions in fixed layouts.</p></article>
+      <article><span class="card-overline">Different visual domain</span><h3>RoboTwin-IF</h3><p class="benchmark-size">25 Pick + 25 Placement <span>· paired instructions</span></p><p>Uses RoboTwin assets, a first-person head camera, and dual-arm manipulation.</p></article>
+    </div>
+    <div class="table-card"><div class="table-heading"><h3>LIBERO-CF · WAM average</h3><span>Faithful ↑ / Biased ↓ · %</span></div><div class="table-wrap" tabindex="0" role="region" aria-label="LIBERO-CF main results"><table class="results"><thead><tr><th scope="col">Model</th><th scope="col">Setting</th><th scope="col">Success F.↑</th><th scope="col">Success B.↓</th><th scope="col">Grounding F.↑</th><th scope="col">Grounding B.↓</th><th scope="col">LIBERO SR↑</th></tr></thead><tbody>
+      <tr><th scope="row" rowspan="2">InternW0-Δ</th><td class="baseline-text">Base</td><td>23.5</td><td>60.5</td><td>37.3</td><td>63.9</td><td>96.0</td></tr><tr><td class="fine-text">+ LDS</td><td class="faithful best"><strong>74.6</strong></td><td>12.3</td><td>89.2</td><td class="faithful best"><strong>19.5</strong></td><td class="faithful best"><strong>96.8</strong></td></tr>
+      <tr><th scope="row" rowspan="2">LingBot-VA</th><td class="baseline-text">Base</td><td>12.3</td><td>48.1</td><td>32.0</td><td>59.9</td><td>89.0</td></tr><tr><td class="fine-text">+ LDS</td><td class="faithful">29.8</td><td>28.9</td><td>59.3</td><td>39.4</td><td>88.2</td></tr>
+      <tr><th scope="row" rowspan="2">OpenWAM</th><td class="baseline-text">Base</td><td>5.1</td><td>80.9</td><td>14.4</td><td>84.3</td><td>94.0</td></tr><tr><td class="fine-text">+ LDS</td><td class="faithful">65.1</td><td class="faithful best"><strong>11.4</strong></td><td class="faithful best"><strong>90.3</strong></td><td>19.6</td><td>89.2</td></tr>
+    </tbody></table></div><p class="table-description">InternW0-Δ + LDS is 26.8 and 42.9 percentage points above the strongest baseline in faithful success and grounding.</p></div>
+    <div class="table-pair">
+      <div class="table-card"><div class="table-heading"><h3>LangGap</h3><span>Success ↑ · %</span></div><div class="table-wrap"><table class="results"><thead><tr><th>Model</th><th>Setting</th><th>Spatial</th><th>Object</th><th>Goal</th><th>Avg.</th></tr></thead><tbody><tr><th rowspan="2">InternW0-Δ</th><td class="baseline-text">Base</td><td>6.4</td><td>42.7</td><td class="faithful best"><strong>63.3</strong></td><td>37.5</td></tr><tr><td class="fine-text">+ LDS</td><td>57.5</td><td class="faithful best"><strong>94.5</strong></td><td>62.2</td><td class="faithful best"><strong>71.4</strong></td></tr><tr><th rowspan="2">LingBot-VA</th><td class="baseline-text">Base</td><td>8.6</td><td>35.9</td><td>4.4</td><td>16.3</td></tr><tr><td class="fine-text">+ LDS</td><td>18.2</td><td>36.4</td><td>10.0</td><td>21.5</td></tr><tr><th rowspan="2">OpenWAM</th><td class="baseline-text">Base</td><td>1.1</td><td>34.1</td><td>24.4</td><td>19.9</td></tr><tr><td class="fine-text">+ LDS</td><td class="faithful best"><strong>62.9</strong></td><td>73.6</td><td>45.6</td><td>60.7</td></tr></tbody></table></div></div>
+      <div class="table-card"><div class="table-heading"><h3>RoboTwin-IF</h3><span>Success / Grounding ↑ · %</span></div><div class="table-wrap"><table class="results"><thead><tr><th>Model</th><th>Setting</th><th>Pick</th><th>Placement</th><th>Avg.</th></tr></thead><tbody><tr><th rowspan="2">InternW0-Δ</th><td class="baseline-text">Base</td><td>0.0 / 5.6</td><td>18.0 / 18.0</td><td>9.0 / 11.8</td></tr><tr><td class="fine-text">+ LDS</td><td>61.6 / 90.4</td><td>33.2 / 34.0</td><td>47.4 / 62.2</td></tr><tr><th rowspan="2">LingBot-VA</th><td class="baseline-text">Base</td><td>4.8 / 10.0</td><td>14.4 / 16.0</td><td>9.6 / 13.0</td></tr><tr><td class="fine-text">+ LDS</td><td>34.8 / 88.4</td><td>13.2 / 20.0</td><td>24.0 / 54.2</td></tr><tr><th rowspan="2">OpenWAM</th><td class="baseline-text">Base</td><td>6.0 / 6.4</td><td>9.2 / 15.6</td><td>7.6 / 11.0</td></tr><tr><td class="fine-text">+ LDS</td><td class="faithful best"><strong>71.2 / 99.6</strong></td><td class="faithful best"><strong>37.6 / 52.8</strong></td><td class="faithful best"><strong>54.4 / 76.2</strong></td></tr></tbody></table></div></div>
+    </div>
+    <div class="insight-grid"><article><h3>Placement destinations</h3><p>LDS extends grounding from grasp targets to destinations. OpenWAM + LDS improves success by 57.7 points on LangGap destination-changing tasks and by 28.4 points on RoboTwin-IF Placement.</p></article><article><h3>A coupling limitation</h3><p>For LingBot-VA, Placement Grounding rises from 16.0% to 20.0%, but valid grasp acquisition drops from 95.2% to 64.4%, limiting end-to-end success.</p></article></div>
+
+    <div id="rollouts" class="subsection-heading"><p class="eyebrow">Qualitative rollouts</p><h3>Same start. A different target.</h3></div>
+    <div class="rollout-grid">
+      <figure class="rollout-card"><div class="rollout-heading"><h3>LIBERO-CF</h3><span>Base left · + LDS right</span></div><video controls muted loop playsinline preload="metadata" width="1024" height="256" src="static/video/libero_cf_1.mp4" aria-label="Paired LIBERO-CF rollout: pick up the coke can and place it on the plate."></video><figcaption>“Pick up the coke can and place it on the plate.”<span>The Base policy follows the original training goal.</span></figcaption></figure>
+      <figure class="rollout-card"><div class="rollout-heading"><h3>LangGap</h3><span>Base left · + LDS right</span></div><video controls muted loop playsinline preload="metadata" width="1024" height="256" src="static/video/langgap_1.mp4" aria-label="Paired LangGap rollout: place the black bowl on the stove instead of the plate."></video><figcaption>“Pick up the black bowl from the middle of the table and place it on the stove.”<span>The changed instruction names a different destination.</span></figcaption></figure>
+      <figure class="rollout-card"><div class="rollout-heading"><h3>RoboTwin-IF · Pick</h3><span>Base top · + LDS bottom</span></div><video controls muted loop playsinline preload="metadata" width="960" height="480" src="static/video/robotwin_pick_1.mp4" aria-label="Paired RoboTwin-IF Pick rollout with three synchronized camera views per policy."></video><figcaption>“Pick up the remote to the right of the microphone.”<span>Each row shows the head and two wrist cameras.</span></figcaption></figure>
+      <figure class="rollout-card"><div class="rollout-heading"><h3>RoboTwin-IF · Placement</h3><span>Base top · + LDS bottom</span></div><video controls muted loop playsinline preload="metadata" width="960" height="480" src="static/video/robotwin_place_1.mp4" aria-label="Paired RoboTwin-IF Placement rollout comparing destination grounding."></video><figcaption>Choose the instructed placement destination.<span>Both policies receive the same scene and instruction.</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="section soft-section" id="generalization" aria-labelledby="generalization-title">
+  <div class="container">
+    <div class="section-heading"><div><p class="eyebrow">05 / Generalization</p><h2 id="generalization-title">Beyond supervised<br>states and scenes.</h2></div><p>Held-out initial states.<br>Held-out scenes.</p></div>
+    <p class="section-lead">Unsup. init uses object poses absent from grounding supervision. Unsup. scene removes all grounding labels from a physical scene. Values are composition-standardized; intervals below each value are task-clustered bootstrap 95% confidence intervals.</p>
+    <div class="result-highlights"><article><p>InternW0-Δ + LDS · held-out scenes</p><strong><span data-result="libero_cf:InternW0-Delta:unsupervised_scene:faithful_success">67.4</span><span class="unit">%</span></strong><span>LIBERO-CF faithful success</span></article><article><p>InternW0-Δ + LDS · held-out scenes</p><strong><span data-result="langgap:InternW0-Delta:unsupervised_scene:success">46.0</span><span class="unit">%</span></strong><span>LangGap success</span></article><p class="highlight-explanation">On held-out initial states, performance remains close to the supervised group. Held-out scenes are harder, partly because some object identities are not covered by LDS grounding supervision.</p></div>
+    <div class="table-card"><div class="table-heading"><h3>LIBERO-CF</h3><span>Faithful ↑ / Biased ↓ · %</span></div><div class="table-wrap" tabindex="0" role="region" aria-label="LIBERO-CF generalization results; scroll horizontally on small screens"><table class="results" id="holdout-libero_cf"><caption class="sr-only">Composition-standardized LIBERO-CF success rates with 95% confidence intervals.</caption><thead><tr><th rowspan="2" scope="col">Model + LDS</th><th colspan="2" scope="colgroup">Sup.</th><th colspan="2" scope="colgroup">Unsup. init</th><th colspan="2" scope="colgroup">Unsup. scene</th></tr><tr><th scope="col" class="faithful">F. ↑</th><th scope="col" class="biased">B. ↓</th><th scope="col" class="faithful">F. ↑</th><th scope="col" class="biased">B. ↓</th><th scope="col" class="faithful">F. ↑</th><th scope="col" class="biased">B. ↓</th></tr></thead><tbody>
+<!-- paper-data:libero_cf:start -->
+<tr data-model="OpenWAM"><th scope="row">OpenWAM</th><td class="faithful" data-group="supervised" data-metric="faithful_success"><span class="result-value">67.1</span><span class="ci" aria-label="95% confidence interval 54.1 to 78.9">54.1–78.9</span></td><td class="biased" data-group="supervised" data-metric="biased_success"><span class="result-value">7.3</span><span class="ci" aria-label="95% confidence interval 3.7 to 13.0">3.7–13.0</span></td><td class="faithful" data-group="unsupervised_init" data-metric="faithful_success"><span class="result-value">66.1</span><span class="ci" aria-label="95% confidence interval 56.0 to 75.5">56.0–75.5</span></td><td class="biased best" data-group="unsupervised_init" data-metric="biased_success"><span class="result-value">5.7</span><span class="ci" aria-label="95% confidence interval 4.5 to 7.2">4.5–7.2</span></td><td class="faithful" data-group="unsupervised_scene" data-metric="faithful_success"><span class="result-value">50.0</span><span class="ci" aria-label="95% confidence interval 30.6 to 67.9">30.6–67.9</span></td><td class="biased" data-group="unsupervised_scene" data-metric="biased_success"><span class="result-value">31.4</span><span class="ci" aria-label="95% confidence interval 12.9 to 53.1">12.9–53.1</span></td></tr>
+<tr data-model="LingBot-VA"><th scope="row">LingBot-VA</th><td class="faithful" data-group="supervised" data-metric="faithful_success"><span class="result-value">29.4</span><span class="ci" aria-label="95% confidence interval 16.1 to 43.6">16.1–43.6</span></td><td class="biased" data-group="supervised" data-metric="biased_success"><span class="result-value">24.1</span><span class="ci" aria-label="95% confidence interval 13.7 to 36.5">13.7–36.5</span></td><td class="faithful" data-group="unsupervised_init" data-metric="faithful_success"><span class="result-value">31.6</span><span class="ci" aria-label="95% confidence interval 20.5 to 43.3">20.5–43.3</span></td><td class="biased" data-group="unsupervised_init" data-metric="biased_success"><span class="result-value">23.9</span><span class="ci" aria-label="95% confidence interval 15.0 to 34.5">15.0–34.5</span></td><td class="faithful" data-group="unsupervised_scene" data-metric="faithful_success"><span class="result-value">27.7</span><span class="ci" aria-label="95% confidence interval 10.1 to 46.4">10.1–46.4</span></td><td class="biased" data-group="unsupervised_scene" data-metric="biased_success"><span class="result-value">23.4</span><span class="ci" aria-label="95% confidence interval 7.9 to 42.5">7.9–42.5</span></td></tr>
+<tr data-model="InternW0-Delta"><th scope="row">InternW0-Δ</th><td class="faithful best" data-group="supervised" data-metric="faithful_success"><span class="result-value">79.7</span><span class="ci" aria-label="95% confidence interval 69.2 to 89.1">69.2–89.1</span></td><td class="biased best" data-group="supervised" data-metric="biased_success"><span class="result-value">7.0</span><span class="ci" aria-label="95% confidence interval 3.7 to 11.8">3.7–11.8</span></td><td class="faithful best" data-group="unsupervised_init" data-metric="faithful_success"><span class="result-value">78.2</span><span class="ci" aria-label="95% confidence interval 69.7 to 85.3">69.7–85.3</span></td><td class="biased" data-group="unsupervised_init" data-metric="biased_success"><span class="result-value">8.9</span><span class="ci" aria-label="95% confidence interval 5.3 to 13.6">5.3–13.6</span></td><td class="faithful best" data-group="unsupervised_scene" data-metric="faithful_success"><span class="result-value">67.4</span><span class="ci" aria-label="95% confidence interval 43.2 to 88.3">43.2–88.3</span></td><td class="biased best" data-group="unsupervised_scene" data-metric="biased_success"><span class="result-value">9.5</span><span class="ci" aria-label="95% confidence interval 0.0 to 25.4">0.0–25.4</span></td></tr>
+<!-- paper-data:libero_cf:end -->
+    </tbody></table></div></div>
+    <div class="table-card"><div class="table-heading"><h3>LangGap</h3><span>Success ↑ · %</span></div><div class="table-wrap" tabindex="0" role="region" aria-label="LangGap generalization results; scroll horizontally on small screens"><table class="results" id="holdout-langgap"><caption class="sr-only">Composition-standardized LangGap success rates with 95% confidence intervals.</caption><thead><tr><th scope="col">Model + LDS</th><th scope="col">Sup.</th><th scope="col">Unsup. init</th><th scope="col">Unsup. scene</th></tr></thead><tbody>
+<!-- paper-data:langgap:start -->
+<tr data-model="OpenWAM"><th scope="row">OpenWAM</th><td class="faithful" data-group="supervised" data-metric="success"><span class="result-value">64.2</span><span class="ci" aria-label="95% confidence interval 51.5 to 75.4">51.5–75.4</span></td><td class="faithful" data-group="unsupervised_init" data-metric="success"><span class="result-value">59.4</span><span class="ci" aria-label="95% confidence interval 47.8 to 71.9">47.8–71.9</span></td><td class="faithful" data-group="unsupervised_scene" data-metric="success"><span class="result-value">41.0</span><span class="ci" aria-label="95% confidence interval 16.5 to 66.9">16.5–66.9</span></td></tr>
+<tr data-model="LingBot-VA"><th scope="row">LingBot-VA</th><td class="faithful" data-group="supervised" data-metric="success"><span class="result-value">19.2</span><span class="ci" aria-label="95% confidence interval 8.8 to 31.2">8.8–31.2</span></td><td class="faithful" data-group="unsupervised_init" data-metric="success"><span class="result-value">20.3</span><span class="ci" aria-label="95% confidence interval 10.0 to 31.6">10.0–31.6</span></td><td class="faithful" data-group="unsupervised_scene" data-metric="success"><span class="result-value">28.8</span><span class="ci" aria-label="95% confidence interval 9.6 to 57.7">9.6–57.7</span></td></tr>
+<tr data-model="InternW0-Delta"><th scope="row">InternW0-Δ</th><td class="faithful best" data-group="supervised" data-metric="success"><span class="result-value">73.0</span><span class="ci" aria-label="95% confidence interval 61.2 to 84.1">61.2–84.1</span></td><td class="faithful best" data-group="unsupervised_init" data-metric="success"><span class="result-value">73.9</span><span class="ci" aria-label="95% confidence interval 60.4 to 86.1">60.4–86.1</span></td><td class="faithful best" data-group="unsupervised_scene" data-metric="success"><span class="result-value">46.0</span><span class="ci" aria-label="95% confidence interval 21.5 to 71.2">21.5–71.2</span></td></tr>
+<!-- paper-data:langgap:end -->
+    </tbody></table></div></div>
+  </div>
+</section>
+
+<section class="section" id="real-world" aria-labelledby="real-title">
+  <div class="container">
+    <div class="section-heading"><div><p class="eyebrow">06 / Real-world experiments</p><h2 id="real-title">Instruction following<br>despite visual shortcuts.</h2></div><p>AgileX Cobot Magic.<br>10 trials per variant and task.</p></div>
+    <div class="real-layout"><figure class="paper-figure real-figure"><img src="static/img/paper/real_world.png" width="1982" height="1182" alt="Paper real-world figure: Press-Button and Place-in-Slot tasks, with Base and + LDS results for OpenWAM, LingBot-VA, and InternW0-Delta." loading="lazy"><figcaption><strong>Real-world instruction following.</strong> Brown bars are Base and blue bars are + LDS. The light blue segment for LingBot-VA on Place-in-Slot denotes Grounding above Success.</figcaption></figure>
+      <div class="prose real-copy"><p><strong>Press-Button.</strong> Training data contain only red-button trajectories. At test time, the target is green or blue. With LDS, all three WAMs reach 100% success.</p><p><strong>Place-in-Slot.</strong> Fixed piece combinations and placement orders make the remaining pieces predictive of the next target. OpenWAM + LDS and InternW0-Δ + LDS reach 100%; LingBot-VA + LDS reaches 80% Grounding and 60% success.</p><p class="source-note">Base and LDS variants use the same biased trajectory data; LDS adds first-frame target-localization supervision.</p></div></div>
+  </div>
+</section>
+
+<section class="section soft-section conclusion-section" aria-labelledby="conclusion-title"><div class="container intro-grid"><div><p class="eyebrow">Conclusion</p><h2 id="conclusion-title">Make the existing<br>instruction signal win.</h2></div><div class="prose"><p>WAMs can encode instructed targets yet act on learned visual priors. Prior–instruction competition explains how an existing instruction signal can be outweighed by a stronger prior. Training-free interventions provide causal support, and LDS explains and improves instruction following across simulation and real-world settings.</p></div></div></section>
+</main>
+<footer><div class="container footer-inner"><a class="wordmark" href="#overview">LDS<span class="brand-dot">.</span></a><p>Beyond Linear Decodability</p><span>Encoded is not enough. The instruction has to win.</span></div></footer>
+</body>
+</html>

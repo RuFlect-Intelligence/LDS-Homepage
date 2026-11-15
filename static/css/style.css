@@ -269,7 +269,3 @@ a.resource-link:hover { background: var(--blue-soft); }
 .resource-link.code-link:hover { background: #4d9be8; }
 .resource-pending { background: var(--soft); color: var(--muted); }
 .resource-status { font-size: 11px; font-weight: 500; }
-.checkpoint-links { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 12px; font-size: 13px; }
-.checkpoint-label { color: var(--muted); font-weight: 600; }
-.checkpoint-links ul { display: flex; flex-wrap: wrap; column-gap: 16px; row-gap: 4px; list-style: none; margin: 0; padding: 0; }
-.checkpoint-links a { text-underline-offset: 3px; }

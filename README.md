@@ -4,9 +4,9 @@ Project page for **Beyond Linear Decodability: Understanding and Improving Instr
 
 [Open the project homepage](https://ruflect-intelligence.github.io/LDS-Homepage/)
 
+- [Linear Decodability Supervision code](https://github.com/RuFlect-Intelligence/Linear-Decodability-Supervision)
 - [RoboTwin-IF evaluator](https://github.com/RuFlect-Intelligence/RoboTwin-IF)
 - [RoboTwin-IF dataset and evaluation assets](https://huggingface.co/datasets/RuFlect/RoboTwin-IF)
-- Fine checkpoints on Hugging Face: [OpenWAM](https://huggingface.co/RuFlect/RoboTwin-IF-OpenWAM-LDS), [LingBot-VA](https://huggingface.co/RuFlect/RoboTwin-IF-LingBot-VA-LDS), [InternW0-Δ](https://huggingface.co/RuFlect/RoboTwin-IF-InternW0-Delta-LDS)
 
 ## Preview
 

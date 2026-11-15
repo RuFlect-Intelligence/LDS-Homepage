@@ -32,6 +32,9 @@ strong { font-weight: 650; }
 .eyebrow { color: var(--muted); font-size: 11px; line-height: 1.6; font-weight: 650; letter-spacing: 1.65px; text-transform: uppercase; margin-bottom: 18px; }
 .topnav { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.97); border-bottom: 1px solid var(--line); }
 .nav-inner { min-height: 73px; display: flex; align-items: center; gap: 32px; }
+.affiliation-logos { --logo-height: 29px; display: flex; flex: none; align-items: center; gap: 16px; }
+.affiliation-logos img { width: auto; height: var(--logo-height); }
+.affiliation-logos .logo-xhumanoid { height: calc(var(--logo-height) * 1.24); }
 .wordmark { font-size: 28px; font-weight: 750; letter-spacing: -1.3px; color: var(--ink); text-decoration: none; line-height: 1; white-space: nowrap; }
 .brand-dot { color: var(--blue); }
 .nav-links { display: flex; gap: 26px; margin-left: auto; }
@@ -168,6 +171,11 @@ footer { border-top: 1px solid var(--line); padding: 30px 0; }
   .hero-figure { padding: 15px 12px; }.figure-label { font-size: 10px; }.figure-index { font-size: 9px; }
   .intro-grid { gap: 45px; }.method-card { padding: 21px; }.method-card h3 { font-size: 18px; }
   .result-highlights { gap: 24px; }.representation-panel { gap: 30px; }.real-grid { gap: 35px; }
+}
+@media (max-width: 900px) {
+  .topnav .nav-inner { flex-wrap: wrap; gap: 0; padding: 10px 0 7px; }
+  .affiliation-logos { --logo-height: clamp(17px, 5.15vw, 29px); gap: 12px; }
+  .topnav .nav-links { flex-basis: 100%; margin-left: 0; padding: 5px 0 0; }
 }
 @media (max-width: 760px) {
   .container { width: calc(100% - 40px); }.nav-inner { min-height: 64px; gap: 14px; }.wordmark { font-size: 25px; }
